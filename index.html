@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <title>Wyatt's Favorite Game</title>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+        }
+
+        canvas {
+            background:#eee;
+            display: block;
+            margin: 0 auto;
+        }
+
+        .centered {
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+     
+    <h1 class="centered">Wyatt's Favorite Game</h1>
+    <h3 id="HighScore" class="centered"></h3>
+    </br>
+    <div class="centered">
+        <input type="checkbox" id="autoPilot" value="newsletter" checked>
+        <label for="autoPilot">Auto Pilot?</label>
+    </div>
+    </br>
+    <canvas id="myCanvas" width="700" height="500"></canvas>
+     
+    <script>
+        var canvas = document.getElementById("myCanvas");
+        var ctx = canvas.getContext("2d");
+        var ballRadius = 30;
+        var x = canvas.width / 2;
+        var y = canvas.height - 200;
+        var dx = 5;
+        var dy = -2;
+        var paddleHeight = 10;
+        var paddleWidth = 300;
+        var paddleX = (canvas.width - paddleWidth) / 2;
+        var rightPressed = false;
+        var leftPressed = false;
+        var score = 0;
+        var highScore = 0;
+        //document.getElementById('HighScore').innerHTML = "High Score: " + getHighScore();
+        //var fs = require("fs");
+        //var text = fs.readFileSync("./high-score.txt");
+        //ng kfn alert(text);
+
+        var ballColorRed = 100;
+        var ballColorGreen = 100;
+        var ballColorBlue = 100;
+
+        var ballColor = "rgb(" + ballColorRed + ", " + ballColorGreen + ", " + ballColorBlue + ")";
+
+        document.addEventListener("keydown", keyDownHandler, false);
+        document.addEventListener("keyup", keyUpHandler, false);
+
+        function keyDownHandler(e) {
+            if (e.key == "Right" || e.key == "ArrowRight") {
+                rightPressed = true;
+            }
+            else if (e.key == "Left" || e.key == "ArrowLeft") {
+                leftPressed = true;
+            }
+        }
+
+        function keyUpHandler(e) {
+            if (e.key == "Right" || e.key == "ArrowRight") {
+                rightPressed = false;
+            }
+            else if (e.key == "Left" || e.key == "ArrowLeft") {
+                leftPressed = false;
+            }
+        }
+
+        // function getHighScore()
+        //     {
+        //         var rawFile = new XMLHttpRequest();
+        //         rawFile.open("GET", "high-score.txt", false);
+        //         var allText = rawFile.responseText;
+        //         return allText;
+        //         // rawFile.onreadystatechange = function ()
+        //         // {
+        //         //     if(rawFile.readyState === 4)
+        //         //     {
+        //         //         if(rawFile.status === 200 || rawFile.status == 0)
+        //         //         {
+        //         //             var allText = rawFile.responseText;
+        //         //             alert(allText + 'hey');
+        //         //         }
+        //         //     }
+        //         // }
+        //         // rawFile.send(null);
+        //     }
+
+        function drawScore() {
+            ctx.font = "30px Arial";
+            ctx.fillStyle = "#FF0000";
+            ctx.fillText(score, 10, 30);
+        }
+
+        function setBallColor() {
+
+            var rand = Math.floor(Math.random() * 10) + 1;
+
+            if (rand == 1 && ballColorRed < 255) {
+                ballColorRed += 3;
+            }
+            else if (rand == 2 && ballColorRed > 0) {
+                ballColorRed -= 3;
+            }
+            else if (rand == 3 && ballColorGreen < 255) {
+                ballColorGreen += 3;
+            }
+            else if (rand == 4 && ballColorGreen > 0) {
+                ballColorGreen -= 3;
+            }
+            else if (rand == 5 && ballColorBlue < 255) {
+                ballColorBlue += 3;
+            }
+            else if (rand == 6 && ballColorBlue > 0) {
+                ballColorBlue -= 3;
+            }
+
+            ballColor = "rgb(" + ballColorRed + ", " + ballColorGreen + ", " + ballColorBlue + ")";
+        }
+
+        function drawBall() {
+            setBallColor();
+            ctx.beginPath();
+            ctx.arc(x, y, ballRadius, 0, Math.PI * 2);
+            ctx.fillStyle = ballColor;
+            ctx.fill();
+            ctx.closePath();
+        }
+        function drawPaddle() {
+            ctx.beginPath();
+            ctx.rect(paddleX, canvas.height - paddleHeight, paddleWidth, paddleHeight);
+            ctx.fillStyle = "#0000FF";
+            //ctx.fillStyle = "#eee";
+            ctx.fill();
+            ctx.closePath();
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawScore();
+            drawBall();
+            drawPaddle();
+
+            if (x + dx > canvas.width - ballRadius || x + dx < ballRadius) {
+                dx = -dx;
+            }
+            if (y + dy < ballRadius) {
+                dy = -dy;
+            }
+            else if (y + dy > canvas.height - ballRadius) {
+                if (x > paddleX && x < paddleX + paddleWidth) {
+                    score += 1;
+                    dy = -dy;
+                    dx = ((x - (paddleX + (0.5 * paddleWidth)))/ paddleWidth * 2) * 5
+                }
+                else {
+                    alert("GAME OVER");
+                    document.location.reload();
+                    clearInterval(interval); // Needed for Chrome to end game
+                }
+            }
+
+            if (rightPressed && paddleX < canvas.width - paddleWidth) {
+                paddleX += 7;
+            }
+            else if (leftPressed && paddleX > 0) {
+                paddleX -= 7;
+            }
+
+            x += dx;
+            y += dy;
+
+            if (document.getElementById("autoPilot").checked)
+            {
+                autoMovePaddle();
+            }
+            
+        }
+
+        function autoMovePaddle() {
+            var plusOrMinus = 0;
+            
+            if (y + dy > canvas.height - ballRadius) 
+            {
+                plusOrMinus = Math.random() < 0.5 ? -1 : 1;
+            }
+
+            paddleX = x - (paddleWidth * 0.5) + (paddleWidth * 0.5 * Math.random() * plusOrMinus);
+        }
+
+        var interval = setInterval(draw, 5);
+    </script>
+     
+</body>
+
+</html>
