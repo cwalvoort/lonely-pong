@@ -60,6 +60,8 @@
 
         var ballColor = "rgb(" + ballColorRed + ", " + ballColorGreen + ", " + ballColorBlue + ")";
 
+        var autoPilotOffset = 0;
+
         document.addEventListener("keydown", keyDownHandler, false);
         document.addEventListener("keyup", keyUpHandler, false);
 
@@ -167,6 +169,11 @@
                     score += 1;
                     dy = -dy;
                     dx = ((x - (paddleX + (0.5 * paddleWidth)))/ paddleWidth * 2) * 5
+
+                    if (document.getElementById("autoPilot").checked)
+                    {
+                        autoPilotOffset = Math.random() * (Math.random() < 0.5 ? -1 : 1);
+                    }
                 }
                 else {
                     alert("GAME OVER");
@@ -193,14 +200,15 @@
         }
 
         function autoMovePaddle() {
-            var plusOrMinus = 0;
-            
-            if (y + dy > canvas.height - ballRadius) 
-            {
-                plusOrMinus = Math.random() < 0.5 ? -1 : 1;
+            paddleX = x - (paddleWidth * 0.5) + (paddleWidth * 0.5 * autoPilotOffset);
+
+            if (paddleX < 0) {
+                paddleX = 0;
             }
 
-            paddleX = x - (paddleWidth * 0.5) + (paddleWidth * 0.5 * Math.random() * plusOrMinus);
+            if (paddleX > canvas.width - paddleWidth) {
+                paddleX = canvas.width - paddleWidth;
+            }
         }
 
         var interval = setInterval(draw, 5);
