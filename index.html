@@ -28,7 +28,7 @@
     <h3 id="HighScore" class="centered"></h3>
     </br>
     <div class="centered">
-        <input type="checkbox" id="autoPilot" value="newsletter" checked>
+        <input type="checkbox" id="autoPilot" checked>
         <label for="autoPilot">Auto Pilot?</label>
     </div>
     </br>
@@ -44,8 +44,8 @@
         var ballRadius = 30;
         var x = canvas.width / 2;
         var y = canvas.height - 200;
-        var dx = 5;
-        var dy = -2;
+        var dx = 2;
+        var dy = -50;
         var paddleHeight = 10;
         var paddleWidth = 300;
         var paddleJump = 7;
@@ -213,15 +213,24 @@
         }
 
         function autoMovePaddle() {
-            paddleX = x - (paddleWidth * 0.5) + (paddleWidth * 0.5 * autoPilotOffset);
+            var diff = x - (paddleX + (paddleWidth * 0.5) + (paddleWidth * 0.5 * autoPilotOffset))
 
-            if (paddleX < 0) {
-                paddleX = 0;
+            if (diff > 5 * paddleJump) {
+                movePaddleRight();
+            }
+            else if (diff < -5 * paddleJump) {
+                movePaddleLeft();
             }
 
-            if (paddleX > canvas.width - paddleWidth) {
-                paddleX = canvas.width - paddleWidth;
-            }
+            // paddleX = x - (paddleWidth * 0.5) + (paddleWidth * 0.5 * autoPilotOffset);
+
+            // if (paddleX < 0) {
+            //     paddleX = 0;
+            // }
+
+            // if (paddleX > canvas.width - paddleWidth) {
+            //     paddleX = canvas.width - paddleWidth;
+            // }
         }
 
         var interval = setInterval(draw, 5);
