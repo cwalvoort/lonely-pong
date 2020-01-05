@@ -37,6 +37,10 @@
     <script>
         var canvas = document.getElementById("myCanvas");
         var ctx = canvas.getContext("2d");
+
+        var leftArrowPressed = false;
+        var rightArrowPressed = false;
+
         var ballRadius = 30;
         var x = canvas.width / 2;
         var y = canvas.height - 200;
@@ -62,6 +66,7 @@
         var autoPilotOffset = 0;
 
         document.addEventListener("keydown", keyDownHandler, false);
+        document.addEventListener("keyup", keyUpHandler, false);
 
         function movePaddleLeft() {
             if (paddleX > 0) {
@@ -77,10 +82,19 @@
 
         function keyDownHandler(e) {
             if (e.key == "Right" || e.key == "ArrowRight") {
-                movePaddleRight();
+                rightArrowPressed = true;
             }
             else if (e.key == "Left" || e.key == "ArrowLeft") {
-                movePaddleLeft();
+                leftArrowPressed = true;
+            }
+        }
+
+        function keyUpHandler(e) {
+            if (e.key == "Right" || e.key == "ArrowRight") {
+                rightArrowPressed = false;
+            }
+            else if (e.key == "Left" || e.key == "ArrowLeft") {
+                leftArrowPressed = false;
             }
         }
 
@@ -188,6 +202,12 @@
 
             if (document.getElementById("autoPilot").checked) {
                 autoMovePaddle();
+            }
+            else if (leftArrowPressed) {
+                movePaddleLeft();
+            }
+            else if (rightArrowPressed) {
+                movePaddleRight();
             }
             
         }
