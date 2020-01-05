@@ -44,9 +44,8 @@
         var dy = -2;
         var paddleHeight = 10;
         var paddleWidth = 300;
+        var paddleJump = 7;
         var paddleX = (canvas.width - paddleWidth) / 2;
-        var rightPressed = false;
-        var leftPressed = false;
         var score = 0;
         var highScore = 0;
         //document.getElementById('HighScore').innerHTML = "High Score: " + getHighScore();
@@ -63,23 +62,25 @@
         var autoPilotOffset = 0;
 
         document.addEventListener("keydown", keyDownHandler, false);
-        document.addEventListener("keyup", keyUpHandler, false);
 
-        function keyDownHandler(e) {
-            if (e.key == "Right" || e.key == "ArrowRight") {
-                rightPressed = true;
-            }
-            else if (e.key == "Left" || e.key == "ArrowLeft") {
-                leftPressed = true;
+        function movePaddleLeft() {
+            if (paddleX > 0) {
+                paddleX -= paddleJump;
             }
         }
 
-        function keyUpHandler(e) {
+        function movePaddleRight() {
+            if (paddleX < canvas.width - paddleWidth) {
+                paddleX += paddleJump;
+            }
+        }
+
+        function keyDownHandler(e) {
             if (e.key == "Right" || e.key == "ArrowRight") {
-                rightPressed = false;
+                movePaddleRight();
             }
             else if (e.key == "Left" || e.key == "ArrowLeft") {
-                leftPressed = false;
+                movePaddleLeft();
             }
         }
 
@@ -182,19 +183,17 @@
                 }
             }
 
-            if (rightPressed && paddleX < canvas.width - paddleWidth) {
-                paddleX += 7;
-            }
-            else if (leftPressed && paddleX > 0) {
-                paddleX -= 7;
-            }
-
             x += dx;
             y += dy;
 
-            if (document.getElementById("autoPilot").checked)
-            {
+            if (document.getElementById("autoPilot").checked) {
                 autoMovePaddle();
+            }
+            else if (rightPressed) {
+                movePaddleRight();
+            }
+            else if (leftPressed) {
+                movePaddleLeft();
             }
             
         }
