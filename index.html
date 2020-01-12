@@ -39,12 +39,12 @@
      
     <script>
         class Ball {
-            constructor(radius, x, y) {
+            constructor(radius, x, y, dx, dy) {
                 this.radius = radius;
                 this.x = x;
                 this.y = y;
-                this.dx = 2;
-                this.dy = -2;
+                this.dx = dx;
+                this.dy = -dy;
                 this.colorRed = 100;
                 this.colorGreen = 100;
                 this.colorBlue = 100;
@@ -155,7 +155,9 @@
         }
 
         function addBall() {
-            balls.push(new Ball(30, canvas.width / 2, canvas.height - 200));
+            var rand = Math.floor(Math.random() * 5) + 1;
+            var dir = Math.random() * (Math.random() < 0.5 ? -1 : 1);
+            balls.push(new Ball(30, canvas.width / 2, canvas.height - 200, dir * rand, rand));
         }
 
         function draw() {
@@ -196,6 +198,7 @@
                 alert("GAME OVER");
                 document.location.reload();
                 clearInterval(interval); // Needed for Chrome to end game
+                clearInterval(intervalAddBall); // Needed for Chrome to end game
             }
 
             if (document.getElementById("autoPilot").checked) {
@@ -222,6 +225,7 @@
         }
 
         var interval = setInterval(draw, 5);
+        var intervalAddBall = setInterval(addBall, 5000);
     </script>
      
 </body>
