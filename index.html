@@ -33,6 +33,7 @@
     </div>
     <div class="centered">
         <input type="button" value="Add Ball" onclick="addBall();">
+        Count: <span id="ballCount"></span>
     </div>
     </br>
     <canvas id="myCanvas" width="700" height="500"></canvas>
@@ -161,6 +162,7 @@
         }
 
         function draw() {
+            document.getElementById("ballCount").innerHTML = balls.length;
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             drawScore();
             paddle.draw(ctx, canvas.height);
@@ -200,32 +202,42 @@
                 clearInterval(interval); // Needed for Chrome to end game
                 clearInterval(intervalAddBall); // Needed for Chrome to end game
             }
-
-            if (document.getElementById("autoPilot").checked) {
-                autoMovePaddle();
+            else {
+                if (document.getElementById("autoPilot").checked) {
+                    autoMovePaddle();
+                }
+                else if (leftArrowPressed) {
+                    paddle.moveLeft();
+                }
+                else if (rightArrowPressed) {
+                    paddle.moveRight();
+                }
             }
-            else if (leftArrowPressed) {
-                paddle.moveLeft();
-            }
-            else if (rightArrowPressed) {
-                paddle.moveRight();
-            }
-            
         }
 
         function autoMovePaddle() {
-            var diff = balls[0].x - (paddle.x + (paddle.width * 0.5) + (paddle.width * 0.5 * autoPilotOffset))
 
-            if (diff > 5 * paddle.jump) {
+            var lowestY = balls[0].y;
+            var lowestX = balls[0].x;
+            for (var j = 1; j < balls.length; j++) {
+                if (balls[j].y > lowestY) { //greater than since 0,0 is top left.
+                    lowestY = balls[j].y;
+                    lowestX = balls[j].x;
+                }
+            }
+
+            var diff = lowestX - (paddle.x + (paddle.width * 0.5) + (paddle.width * 0.5 * autoPilotOffset))
+
+            if (diff > 1 * paddle.jump) {
                 paddle.moveRight();
             }
-            else if (diff < -5 * paddle.jump) {
+            else if (diff < -1 * paddle.jump) {
                 paddle.moveLeft();
             }
         }
 
         var interval = setInterval(draw, 5);
-        var intervalAddBall = setInterval(addBall, 5000);
+        var intervalAddBall = setInterval(addBall, 500);
     </script>
      
 </body>
